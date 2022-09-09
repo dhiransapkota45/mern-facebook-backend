@@ -7,6 +7,8 @@ const jwt = require("jsonwebtoken");
 class UserController {
   //validation for input is not done here because we cannot access formdata before uploading using multer
   //so do in frontend
+
+  //also make password unsend while sending response 
   async signup(req, res, profile_picture) {
     try {
       const { firstname, lastname, email, password, birthday, gender } =
