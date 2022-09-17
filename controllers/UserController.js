@@ -11,10 +11,11 @@ class UserController {
   //also make password unsend while sending response 
   async signup(req, res, profile_picture) {
     try {
-      const { firstname, lastname, email, password, birthday, gender } =
+      const { firstname, lastname, email, password, birthday, gender, friends } =
         req.body;
+        // console.log(friends);
       const response = await userModel.find({ email: email });
-      console.log(response);
+      // console.log(response);
       if (response.length > 0) {
         return res
           .status(409)
@@ -30,7 +31,7 @@ class UserController {
         password: hashedPassword,
         birthday,
         gender,
-        profile_picture,
+        profile_picture
       });
       return res.json({
         success: true,
@@ -70,6 +71,8 @@ class UserController {
       return res.status(400).json(error);
     }
   }
+
+  
 }
 
 module.exports = UserController;
