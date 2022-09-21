@@ -62,14 +62,26 @@ class UserController {
       };
       const authToken = jwt.sign(jwtPayload, process.env.JWT_SECRET);
 
+      //later make sure that user details should not include password and other non related data
       res.status(200).json({
         msg: "User logged in successfully.",
         success: true,
         authToken,
+        user:emailCheck[0]
       });
     } catch (error) {
       return res.status(400).json(error);
     }
+  }
+
+  async peopleyoumayknow(req, res){
+    console.log("reached here");
+    //here i need to fix that the user who is sending request should not be in response sent to client
+    const {id} = req.params
+    const response = await userModel.find({ _id: {"$ne": id}}).sort({creation_date:-1}).limit(5)
+    // const final_data = response.remove({_id:id})
+    // return res.send(final_data)
+    return res.json({success:true, response})
   }
 
   

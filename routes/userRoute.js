@@ -85,4 +85,6 @@ router.put("/post/like/:postId/:userId", postControllerInstance.likePost)
 //   }
 // });
 
+router.get("/peopleyoumayknow/:id", userControllerInstance.peopleyoumayknow)
+
 module.exports = router;
