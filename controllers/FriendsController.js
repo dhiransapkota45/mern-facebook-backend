@@ -3,6 +3,7 @@ const userModel = require("../models/userModel");
 class FriendsController {
   async friendrequsetSend(req, res) {
     try {
+      console.log("reached here");
       const { senderId, receiverId } = req.params;
       // console.log(senderId);
 
@@ -15,7 +16,7 @@ class FriendsController {
 
       const reqList = await userModel.find({
         _id: receiverId,
-        "friendRequests.userId": senderId,
+        "friendRequests": senderId,
       });
       if (reqList.length > 0) {
         return res
@@ -24,9 +25,12 @@ class FriendsController {
       }
 
       const addRequest = await userModel.findByIdAndUpdate(receiverId, {
-        $push: { friendRequests: { userId: senderId } },
+        $push: { friendRequests:  senderId  },
       });
-      console.log(addRequest);
+      const addRequestSent = await userModel.findByIdAndUpdate(senderId, {
+        $push:{requestSent:receiverId}
+      })
+      console.log(addRequest, addRequestSent);
       return res
         .status(200)
         .json({ success: true, msg: "requst sent successfully" });
