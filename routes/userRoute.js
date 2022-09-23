@@ -89,4 +89,6 @@ router.get("/peopleyoumayknow/:id", userControllerInstance.peopleyoumayknow)
 
 router.get("/friendrequest/:id", userControllerInstance.getFriendRequest)
 
+router.get("/getpost/:id", userControllerInstance.getPost)
+
 module.exports = router;

@@ -16,7 +16,7 @@ class FriendsController {
 
       const reqList = await userModel.find({
         _id: receiverId,
-        "friendRequests": senderId,
+        friendRequests: senderId,
       });
       if (reqList.length > 0) {
         return res
@@ -25,11 +25,11 @@ class FriendsController {
       }
 
       const addRequest = await userModel.findByIdAndUpdate(receiverId, {
-        $push: { friendRequests:  senderId  },
+        $push: { friendRequests: senderId },
       });
       const addRequestSent = await userModel.findByIdAndUpdate(senderId, {
-        $push:{requestSent:receiverId}
-      })
+        $push: { requestSent: receiverId },
+      });
       console.log(addRequest, addRequestSent);
       return res
         .status(200)
@@ -72,47 +72,52 @@ class FriendsController {
       //       { _id: accepterId }
       //     ],
       //   });
-    //   const checkRequest = await userModel.find({
-    //     $and: [
-    //       { _id: accepterId },
-    //       {
-    //         $or: [
-    //           { "friendRequests.userId" : senderId  },
-    //           { "friends.userId":  senderId },
-    //         ],
-    //       },
-    //     ],
-    //   });
+      //   const checkRequest = await userModel.find({
+      //     $and: [
+      //       { _id: accepterId },
+      //       {
+      //         $or: [
+      //           { "friendRequests.userId" : senderId  },
+      //           { "friends.userId":  senderId },
+      //         ],
+      //       },
+      //     ],
+      //   });
 
-    const checkRequest = await userModel.find({$and:[
-        {_id:accepterId}, {"friendRequests.userId": senderId}
-    ]})
+      const checkRequest = await userModel.find({
+        $and: [{ _id: accepterId }, { friendRequests: senderId }],
+      });
       console.log(checkRequest);
-    //   if (checkRequest.length === 0) {
-    //     return res.status(400).json({
-    //       success: false,
-    //       msg: "no frinedRequest found from given id",
-    //     });
-    //   }
+      //   if (checkRequest.length === 0) {
+      //     return res.status(400).json({
+      //       success: false,
+      //       msg: "no frinedRequest found from given id",
+      //     });
+      //   }
 
       const checkRequest2 = await userModel.find({
-        _id:accepterId, friends:{userId:senderId}
-      })
+        _id: accepterId,
+        friends: senderId,
+      });
 
-      if(checkRequest.length === 0 || checkRequest2.length>0){
-        return res.status(400).json({success:false, msg:"some error occured"})
+      if (checkRequest.length === 0 || checkRequest2.length > 0) {
+        return res
+          .status(400)
+          .json({ success: false, msg: "some error occured" });
       }
 
       const confirmRequest = await userModel.findByIdAndUpdate(accepterId, {
-        $pull: { friendRequests: { userId: senderId } },
-        $push: { friends: { userId: senderId } },
+        $pull: { friendRequests: senderId },
+        $push: { friends: senderId },
       });
 
       const confirmRequest2 = await userModel.findByIdAndUpdate(senderId, {
-        $push: { friends: { userId: accepterId } },
+        $pull: { requestSent: accepterId },
+        $push: { friends: accepterId },
       });
       return res.status(200).json({ confirmRequest, confirmRequest2 });
     } catch (error) {
+      console.log(error);
       return res.json({ error });
     }
   }

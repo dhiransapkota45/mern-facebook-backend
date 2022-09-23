@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const generateHash = require("../utils/generateHash");
 const comparePassword = require("../utils/comparePassword");
 const jwt = require("jsonwebtoken");
+const postModel = require("../models/postModel");
 
 class UserController {
   //validation for input is not done here because we cannot access formdata before uploading using multer
@@ -135,6 +136,20 @@ class UserController {
       return res.json({ success: true, response });
     } catch (error) {
       return res.status(400).json({ success: false, error });
+    }
+  }
+
+  async getPost(req, res){
+    try {
+      const {id}= req.params
+      const getFriends = await userModel.findById(id, "friends")
+      console.log(getFriends);
+
+      const getPost = await postModel.find({posterId:getFriends.friends}).populate("posterId", "firstname lastname")
+      console.log(getPost);
+      return res.status(200).json({succcess:true, getPost})
+    } catch (error) {
+      return res.status(400).json({success:false, error})
     }
   }
 }
