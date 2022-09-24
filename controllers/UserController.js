@@ -4,6 +4,7 @@ const generateHash = require("../utils/generateHash");
 const comparePassword = require("../utils/comparePassword");
 const jwt = require("jsonwebtoken");
 const postModel = require("../models/postModel");
+const imagePath = require("../utils/imagePath");
 
 class UserController {
   //validation for input is not done here because we cannot access formdata before uploading using multer
@@ -139,17 +140,32 @@ class UserController {
     }
   }
 
-  async getPost(req, res){
+  async getPost(req, res) {
     try {
-      const {id}= req.params
-      const getFriends = await userModel.findById(id, "friends")
+      const { id } = req.params;
+      const getFriends = await userModel.findById(id, "friends");
       console.log(getFriends);
 
-      const getPost = await postModel.find({posterId:getFriends.friends}).populate("posterId", "firstname lastname")
+      if (getFriends.friends.length === 0) {
+        return res.status(200).json({ success: true, getPost: [] });
+      }
+      const checkPostsOfFriends = await postModel.find({
+        posterId: getFriends.friends,
+      });
+      console.log(checkPostsOfFriends);
+      if (checkPostsOfFriends.length === 0) {
+        return res.status(200).json({ success: true, getPost: [] });
+      }
+      const getPostRaw = await postModel
+        .find({ posterId: getFriends.friends })
+        .populate("posterId", "firstname lastname profile_picture")
+        .sort({ postedDate: -1 });
+      console.log(getPostRaw[0].postImage);
+      const getPost = imagePath(getPostRaw);
       console.log(getPost);
-      return res.status(200).json({succcess:true, getPost})
+      return res.status(200).json({ succcess: true, getPost });
     } catch (error) {
-      return res.status(400).json({success:false, error})
+      return res.status(400).json({ success: false, error });
     }
   }
 }

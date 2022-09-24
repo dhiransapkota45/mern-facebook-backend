@@ -8,6 +8,7 @@ const bodyParser = require("body-parser")
 
 app.use(cors())
 app.use(express.json())
+app.use(express.static("public/post_image"))
 app.use(express.static("public/profile_pic"))
 
 app.use(bodyParser.json({ limit: '50mb' }));
