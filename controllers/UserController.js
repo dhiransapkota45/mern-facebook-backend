@@ -168,6 +168,17 @@ class UserController {
       return res.status(400).json({ success: false, error });
     }
   }
+
+  async getUser(req, res){
+    try {
+      const {id} = req.params
+      const getUser = await userModel.findById(id)
+      return res.status(200).json({success:true, getUser})
+      
+    } catch (error) {
+      return res.status(400).json({success:false})
+    }
+  }
 }
 
 module.exports = UserController;

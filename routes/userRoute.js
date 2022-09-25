@@ -91,4 +91,10 @@ router.get("/friendrequest/:id", userControllerInstance.getFriendRequest)
 
 router.get("/getpost/:id", userControllerInstance.getPost)
 
+router.get("/getuser/:id", userControllerInstance.getUser)
+
+router.put("/addcomment/:postId/:userId", postControllerInstance.addComment)
+
+router.get("/getcomment/:id", postControllerInstance.getComment)
+
 module.exports = router;

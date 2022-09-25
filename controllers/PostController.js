@@ -1,4 +1,5 @@
 const postModel = require("../models/postModel");
+const userModel = require("../models/userModel")
 
 class PostController {
   async createPost(req, res, post_image) {
@@ -58,6 +59,51 @@ class PostController {
     } catch (error) {
       return res.send(error);
     }
+  }
+
+  async addComment(req, res){
+    try {
+      const {postId, userId} = req.params
+      console.log(req.body);
+      const {comment} = req.body
+      if(!postId || !userId ||!comment){
+        return res.status(400).json({success:false, msg:"imcomplete request"})
+      }
+
+      const checkPost = await postModel.findById(postId)
+      if(checkPost.length===0){
+        return res.status(400).json({success:false, msg:"post does not exist"})
+      }
+
+      const checkUser = await userModel.findById(userId)
+      if(checkUser.length===0){
+        return res.status(400).json({success:false, msg:"user does not exist"})
+      }
+
+      //here we can add validation for checking if the owner of post is friends with commenter or not 
+      //but that is not neccessary
+
+      const response = await postModel.findByIdAndUpdate(postId, {
+        $push:{comments:{userId:userId, comment:comment}}
+      })
+      console.log(response);
+
+      return res.status(200).json({success:true, msg:"comment added successfully"})
+    } catch (error) {
+      return res.status(400).json({success:false})
+    }
+  }
+
+  async getComment(req, res){
+    const {id} = req.params
+    const checkPost = await postModel.findById(id)
+    if(checkPost.length === 0){
+      return res.status(400).json({success:false, msg:"post does not exist"})
+    } 
+
+    const getUser = await postModel.findById(id).select("comments").populate("comments.userId", "firstname lastname profile_picture").sort({posted_date:-1})
+    console.log(getUser);
+    return res.send(getUser)
   }
 }
 
